@@ -1,0 +1,28 @@
+#Archivo que ignora determinadas cosas para que el contenido de github este mas limpio
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Compilación Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Archivos temporales y logs
+*.log
+*.tmp
+
+# IDEs
+.idea/
+.vscode/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Otros
+bin/
+build/
+target/
