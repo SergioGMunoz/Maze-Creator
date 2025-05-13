@@ -4,8 +4,8 @@ import java.util.ArrayList;
 public class Maze {
     private Integer id;
     private String name;
-    private Integer height;
-    private Integer width;
+    Integer num_col;
+    Integer num_row;
     private Integer numCrocodiles;
     private Integer numMedKit ;
     private Integer dmgCrocodiles ;
@@ -17,13 +17,12 @@ public class Maze {
    	// Lista con todos los laberintos
     public static ArrayList<Maze> mazes = new ArrayList<>();
 
-	public Maze(Integer id, String name, Integer height, Integer width, Integer numCrocodiles, Integer numMedKit,
+	public Maze(Integer id, String name, Integer num_col, Integer num_row, Integer numCrocodiles, Integer numMedKit,
 			Integer dmgCrocodiles, Integer hpMedKit, Integer timeQuestions, Integer dmgQuestions, Boolean enableHelp) {
-		super();
 		this.id = id;
 		this.name = name;
-		this.height = height;
-		this.width = width;
+		this.num_col = num_col;
+		this.num_row = num_row;
 		this.numCrocodiles = numCrocodiles;
 		this.numMedKit = numMedKit;
 		this.dmgCrocodiles = dmgCrocodiles;
@@ -35,5 +34,4 @@ public class Maze {
 
     
 
-    // Getters y setters si los necesitas
 }
