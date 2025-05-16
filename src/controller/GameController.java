@@ -35,7 +35,7 @@ public class GameController {
 		gameDAO.importQuestions();
 		
 		//Mostrar ventana
-		showGameView ();
+		showGameView();
 	}
 	
 	
@@ -44,7 +44,7 @@ public class GameController {
 		return health;
 	}
 
-	private boolean[] getDirections() {
+	private boolean [] getDirections() {
 
 	    int maxCol = maze.getNumCol();
 	    int maxRow = maze.getNumRow();
@@ -56,12 +56,13 @@ public class GameController {
 		// Abajo -> 1 0
 		// Izquierda -> 0 -1
 	    
-	    boolean [] moves = {
-	    		row > 0 && cells[col][row - 1] != 1, // Arriba fila -1 
-	    		row < maxRow - 1 && cells[col][row + 1] != 1, // Abajo fila +1 
-	    		col > 0 && cells[col - 1][row] != 1, // Izquierda columna -1
-	    		col < maxCol - 1 && cells[col + 1][row] != 1 // Derecha col +1
+	    boolean[] moves = {
+	    	    row > 0 && cells[row - 1][col] != 1,               // Arriba
+	    	    row < maxRow - 1 && cells[row + 1][col] != 1,      // Abajo
+	    	    col > 0 && cells[row][col - 1] != 1,               // Izquierda
+	    	    col < maxCol - 1 && cells[row][col + 1] != 1       // Derecha
 	    	};
+
 	    return moves;
 	}
 
@@ -83,27 +84,35 @@ public class GameController {
 	
 	// Lógica de moverse 
 	public void move(int direction) {
-	    // Direcciones: 1=Arriba, 2=Abajo, 3=Izquierda, 4=Derecha
+	    // Direcciones: 0=Arriba, 1=Abajo, 2=Izquierda, 3=Derecha
+		System.out.println("Direción: " + direction);
+		System.out.println("Col " + col + " Row " + row);
 	    switch (direction) {
-	        case 1:
+	        case 0:
 	        	row--;
 	        	break;
-	        case 2:
+	        case 1:
 	        	row++; 
 	        	break;
-	        case 3:
+	        case 2:
 	        	col--;   
 	        	break;
-	        case 4: 
+	        case 3: 
 	        	col++;   
 	        	break;
 	        default:
 	        	System.out.println("Dirección no válida");
 	        	break;
 	    }
+	    System.out.println("MOVIMIENTO:");
+	    System.out.println("Salud->"+health);
+		System.out.println("Col " + col + " Row " + row);
+		System.out.println("Tipo: " + disposition.cells[row][col]);
+		
 	    //Muestra el tipo de casilla
 	    showTypeCell();
 	    
+	    gameView.updateLbHealth(health);
 	    //Chechear victoria o derrota
 	    if(!isEnd()) {
 	    	showQuiz(false);
@@ -118,6 +127,7 @@ public class GameController {
 		
 		// Asignar nuevos puntos de vida
 		if(type == 2) {
+			System.out.println("Daño de cocodrilo -> " + maze.getDmgCrocodiles());
 			//Cocodrilo
 			health -= maze.getDmgCrocodiles();
 			if (health < 0) health = 0;
@@ -125,6 +135,7 @@ public class GameController {
 			gameView.updateLbCrocodiles(maze.getNumCrocodiles());
 		}else if (type == 3) {
 			//Medical Kit
+			System.out.println("Cura MedKit -> " + maze.getHpMedKit());
 			health += maze.getHpMedKit();
 			if (health > 100) health = 100;
 			maze.setNumMedKit(maze.getNumMedKit() -1);
@@ -133,10 +144,13 @@ public class GameController {
 		//Mostrar tipo en view 
 		gameView.updateCellType(type);
 		//Eliminar typo de casilla
-		disposition.cells[row][col] = 1;
+		disposition.cells[row][col] = 0;
+		System.out.println("Salud actual -> " + health);
 	}
 
-	public void quizFail() {
+	public void quizFail(JFrame quizFrame) {
+		quizFrame.dispose(); 
+		System.out.println("Ha fallado la pregunta");
 		health -= maze.getDmgQuestions();
 		if (!isEnd()) {
 			QuizController quizController = new QuizController(this, true,maze.getDmgQuestions());
@@ -151,7 +165,7 @@ public class GameController {
 	private boolean isEnd() {
 		// Metodo que chequea la derrota
 		boolean fail = health <= 0;
-		boolean win = (col == maze.getNumCol()-1) && (row == maze.getNumRow()) && !fail;
+		boolean win = (col == maze.getNumCol()-1) && (row == maze.getNumRow()-1) && !fail;
 		
 		if (fail || win) {
 			goRanking(win);

@@ -44,8 +44,7 @@ public class GameDAO {
 	    ps.setInt(2, dispositionId);
 	    ResultSet rs = ps.executeQuery();
 	    
-	    int [][] cells = new int[maze.numCol][maze.numRow];
-
+	    int [][] cells = new int[maze.numRow][maze.numCol];
 	    while (rs.next()) {
 	        int col = rs.getInt("Col_Maze");
 	        int row = rs.getInt("Row_Maze");
@@ -53,15 +52,33 @@ public class GameDAO {
 	        
 	        //Codificar nombres a numeros
 	        switch (cellType) {
-	            case "Free" -> cells[col][row] = 0;
-	            case "Block" -> cells[col][row] = 1;
-	            case "Crocodile" -> cells[col][row] = 2;
-	            case "Medkit" -> cells[col][row] = 3;
-	            default -> cells[col][row] = -1;
+	            case "Free":
+	            	cells[row][col] = 0;
+	            	break;
+	            case "Block":
+	            	cells[row][col] = 1;
+	            	break;
+	            case "Crocodile":
+	            	cells[row][col] = 2;
+	            	break;
+	            case "Medkit":
+	            	cells[row][col] = 3;
+	            	break;
+	            default:
+	            	cells[row][col] = -1;
+	            	break;
 	        }
+	        
         }
 
 	    Disposition disposition = new Disposition(maze, cells);
+	    System.out.println("📦 Contenido de la disposición:");
+	    for (int row = 0; row < cells[0].length; row++) {
+	        for (int col = 0; col < cells.length; col++) {
+	            System.out.print(cells[row][col] + " ");
+	        }
+	        System.out.println(); // Salto de línea al final de cada fila
+	    }
 	    return disposition;
 	}
 

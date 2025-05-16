@@ -69,6 +69,10 @@ public class GameView extends JFrame {
 			lbCellType.setText("Casilla libre");
 			lbCellType.setForeground(Color.WHITE);
 			break;
+		case 1:
+			lbCellType.setText("Bloque");
+			lbCellType.setForeground(Color.YELLOW);
+			break;
 		case 2:
 			lbCellType.setText("Cocodrilo");
 			lbCellType.setForeground(Color.RED);
@@ -82,13 +86,14 @@ public class GameView extends JFrame {
 			break;
 		}
 	}
+	
 	/**
 	 * Create the frame.
 	 */
 	public GameView(GameController gameController) {
 		this.gameController = gameController;
 		setTitle("Partida");
-	    setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    setBounds(100, 100, 700, 500);
 	    contentPane = new JPanel();
 	    contentPane.setBackground(new Color(40, 45, 60));
