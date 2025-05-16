@@ -109,16 +109,19 @@ public class GameController {
 		System.out.println("Col " + col + " Row " + row);
 		System.out.println("Tipo: " + disposition.cells[row][col]);
 		
-	    //Muestra el tipo de casilla
-	    showTypeCell();
 	    
-	    gameView.updateLbHealth(health);
+	    
+	    
 	    //Chechear victoria o derrota
 	    if(!isEnd()) {
 	    	showQuiz(false);
 	    	//Actualizar btns para la vuelta
 		    gameView.updateBtnMoves(getDirections());
 	    }
+	    
+	    //Muestra el tipo de casilla
+	    showTypeCell();
+	    gameView.updateLbHealth(health);
 	}
 	
 	// Metodo que muestra lo que hay en la casilla (nada, cocodirlo o kit medico)
@@ -150,8 +153,9 @@ public class GameController {
 
 	public void quizFail(JFrame quizFrame) {
 		quizFrame.dispose(); 
-		System.out.println("Ha fallado la pregunta");
 		health -= maze.getDmgQuestions();
+		System.out.println("Salud actual -> " + health);
+		gameView.updateLbHealth(health);
 		if (!isEnd()) {
 			QuizController quizController = new QuizController(this, true,maze.getDmgQuestions());
 		}
