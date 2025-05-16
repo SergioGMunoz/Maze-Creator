@@ -12,12 +12,19 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import controller.GameController;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
 public class GameView extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JLabel lbHealth, lbMedkits, lbCrocodiles;
 	private JButton btnUp, btnDown, btnLeft, btnRight, btnSurrender;
+	private JLabel lbCellType;
+	private GameController gameController;
 
 	/**
 	 * Launch the application.
@@ -26,7 +33,7 @@ public class GameView extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					GameView frame = new GameView();
+					GameView frame = new GameView(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -34,13 +41,59 @@ public class GameView extends JFrame {
 			}
 		});
 	}
+	
+	public void updateLbHealth(int health) {
+	    lbHealth.setText("Vida: " + health);
+	}
 
+	public void updateLbMedkits(int medkits) {
+	    lbMedkits.setText("Botiquines: " + medkits);
+	}
+
+	public void updateLbCrocodiles(int crocodiles) {
+	    lbCrocodiles.setText("Cocodrilos: " + crocodiles);
+	}
+	
+	public void updateBtnMoves(boolean[] moves) {
+		if (moves.length >= 4) {
+			btnUp.setEnabled(moves[0]);
+			btnDown.setEnabled(moves[1]);
+			btnLeft.setEnabled(moves[2]);
+			btnRight.setEnabled(moves[3]);
+		}	
+	}
+
+	public void updateCellType(int type) {
+		switch(type) {
+		case 0:
+			lbCellType.setText("Casilla libre");
+			lbCellType.setForeground(Color.WHITE);
+			break;
+		case 1:
+			lbCellType.setText("Bloque");
+			lbCellType.setForeground(Color.YELLOW);
+			break;
+		case 2:
+			lbCellType.setText("Cocodrilo");
+			lbCellType.setForeground(Color.RED);
+			break;
+		case 3:
+			lbCellType.setText("Botiquín");
+			lbCellType.setForeground(Color.GREEN);
+			break;
+		default:
+			lbCellType.setText("");
+			break;
+		}
+	}
+	
 	/**
 	 * Create the frame.
 	 */
-	public GameView() {
+	public GameView(GameController gameController) {
+		this.gameController = gameController;
 		setTitle("Partida");
-	    setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    setBounds(100, 100, 700, 500);
 	    contentPane = new JPanel();
 	    contentPane.setBackground(new Color(40, 45, 60));
@@ -61,7 +114,7 @@ public class GameView extends JFrame {
 	    statePanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
 	    contentPane.add(statePanel);
 
-	    lbHealth = new JLabel("Health: 100", SwingConstants.CENTER);
+	    lbHealth = new JLabel("Salud: 100", SwingConstants.CENTER);
 	    lbHealth.setForeground(Color.WHITE);
 	    lbHealth.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 	    lbHealth.setBounds(54, 20, 107, 25);
@@ -104,12 +157,40 @@ public class GameView extends JFrame {
 	    btnDown.setFont(new Font("Segoe UI", Font.BOLD, 24));
 	    btnDown.setBounds(110, 90, 80, 50);
 	    controlPanel.add(btnDown);
+	    
+	    lbCellType = new JLabel("Casilla Libre", SwingConstants.CENTER);
+	    lbCellType.setForeground(Color.WHITE);
+	    lbCellType.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+	    lbCellType.setBounds(62, 165, 181, 25);
+	    controlPanel.add(lbCellType);
 
 	    btnSurrender = new JButton("Rendirse");
 	    btnSurrender.setBounds(270, 390, 150, 40);
 	    btnSurrender.setFont(new Font("Segoe UI", Font.BOLD, 16));
 	    btnSurrender.setBackground(new Color(255, 0, 0));
 	    contentPane.add(btnSurrender);
+	    
+	    btnUp.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		gameController.move(0);
+	    	}
+	    });
+	    
+	    btnDown.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		gameController.move(1);
+	    	}
+	    });
+	    btnLeft.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		gameController.move(2);
+	    	}
+	    });
+	    
+	    btnRight.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		gameController.move(3);
+	    	}
+	    });
 	}
-
 }

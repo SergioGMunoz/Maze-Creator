@@ -29,11 +29,10 @@ public class ConnectionDB {
 
     public static void close() {
         try {
-            if (getConnection() != null && !getConnection().isClosed()) {
-                getConnection().close();
-                System.out.println("✔️ Conexión cerrada correctamente");
-            }
+        	getConnection().close();
+        	System.out.println("✔️ Conexión cerrada correctamente");
         } catch (SQLException e) {
+        	System.err.println("❌ Error SQL al cerrar la conexion");
             e.printStackTrace();
         } catch (Exception e) {
             System.err.println("❌ Error inesperado");
