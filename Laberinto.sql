@@ -1,7 +1,6 @@
 CREATE DATABASE IF NOT EXISTS Laberinto;
 
 USE Laberinto;
-
 DROP TABLE IF EXISTS Ranking;
 DROP TABLE IF EXISTS Disposition;
 DROP TABLE IF EXISTS Maze;
@@ -40,13 +39,15 @@ CREATE TABLE Ranking (
 );
 
 CREATE TABLE Disposition (
-    ID_Disposition INT AUTO_INCREMENT PRIMARY KEY,
-    ID_Maze INT,
+    ID_Disposition INT NOT NULL,
+    ID_Maze INT NOT NULL,
     Col_Maze INT NOT NULL,
     Row_Maze INT NOT NULL,
     Cell_Type ENUM('Free', 'Block', 'Crocodile', 'Medkit') NOT NULL,
+    PRIMARY KEY (ID_Disposition, ID_Maze, Col_Maze, Row_Maze),
     FOREIGN KEY (ID_Maze) REFERENCES Maze(ID_Maze) ON DELETE CASCADE
 );
+
 
 -- Crear un usuario para la conexion de java
 CREATE USER IF NOT EXISTS  'JavaLaberinto'@'localhost' IDENTIFIED BY 'Java12345';
@@ -167,3 +168,24 @@ INSERT INTO Questions (Question, AnswerCorrect, Answer2, Answer3, Answer4) VALUE
 ('¿Qué animal vive en el Polo Norte?', 'Oso polar', 'Pingüino', 'Foca', 'Morsa'),
 ('¿Qué planeta gira más rápido?', 'Júpiter', 'Tierra', 'Marte', 'Venus'),
 ('¿Qué fruta es roja y tiene semillas afuera?', 'Fresa', 'Manzana', 'Pera', 'Uva');
+
+
+INSERT INTO Maze (
+    Name, Num_Col, Num_Row, NumCrocodiles, NumMedKit, 
+    DmgCrocodiles, HpMedKit, TimeQuestions, DmgQuestions, EnableHelp
+) VALUES (
+    'LaberintoMini', 2, 2, 1, 1, 
+    10, 5, 30, 15, FALSE
+);
+
+INSERT INTO Disposition (ID_Disposition, ID_Maze, Col_Maze, Row_Maze, Cell_Type) VALUES
+(1, 1, 0, 0, 'Free'),
+(1, 1, 1, 0, 'Crocodile'),
+(1, 1, 0, 1, 'Medkit'),
+(1, 1, 1, 1, 'Free');
+
+
+
+SELECT * FROM Disposition;
+SELECT * FROM Maze;
+
