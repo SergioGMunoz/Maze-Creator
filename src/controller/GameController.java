@@ -79,7 +79,7 @@ public class GameController {
 	// Oculta game y muestra quiz con una pregunta
 	private void showQuiz(boolean failed) {
 		gameView.setVisible(false);
-		QuizController quizController = new QuizController(this, false, maze.getDmgQuestions());
+		QuizController quizController = new QuizController(this, false, maze.getDmgQuestions(),maze.getTimeQuestions());
 	}
 	
 	// Lógica de moverse 
@@ -157,7 +157,7 @@ public class GameController {
 		System.out.println("Salud actual -> " + health);
 		gameView.updateLbHealth(health);
 		if (!isEnd()) {
-			QuizController quizController = new QuizController(this, true,maze.getDmgQuestions());
+			QuizController quizController = new QuizController(this, true,maze.getDmgQuestions(),maze.getTimeQuestions());
 		}
 	}
 

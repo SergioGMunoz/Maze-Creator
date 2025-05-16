@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.Timer;
 
 import controller.QuizController;
 
@@ -26,6 +27,10 @@ public class QuizView extends JFrame {
     private JLabel lbPregunta;
     private QuizController quizController;
     private JButton btnEnviar;
+    private JLabel lblTime;
+    private int seconds;
+    private Timer timer;
+
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
@@ -38,7 +43,15 @@ public class QuizView extends JFrame {
         });
     }
     
-    public void updateQuestion(String question, ArrayList <String> answers) {
+    
+    
+    public void setSeconds(int seconds) {
+		this.seconds = seconds;
+	}
+
+
+
+	public void updateQuestion(String question, ArrayList <String> answers) {
     	lbPregunta.setText(question);
     	rdOption1.setText(answers.get(0));
     	rdOption2.setText(answers.get(1));
@@ -61,6 +74,35 @@ public class QuizView extends JFrame {
     private void updateBtnSent(boolean enable) {
     	btnEnviar.setEnabled(enable);
 	}
+    
+    // Enlace: https://old.chuidiang.org/java/timer/timer.php
+    public void timerStart() {
+    	lblTime.setText(seconds + "s");
+    	
+    	if (timer != null && timer.isRunning()) {
+    	    timer.stop();
+    	}
+    	
+    	timer = new Timer (1000, new ActionListener ()
+    	{
+    	    public void actionPerformed(ActionEvent e){
+    	        seconds--;
+    	        System.out.println("Un segundo..."+seconds);
+    	        if (seconds <= 0) {
+    	        	seconds = 0;
+    	        	quizController.checkAnswer("no-time-response");
+    	        	System.out.println("Se acabó el tiempo");
+    	        	if (timer != null && timer.isRunning()) {
+            		    timer.stop();
+            		}
+    	        }
+    	        lblTime.setText(seconds +"s");
+    	     }
+    	});
+    	timer.start();
+    }
+    
+    
     
 	public QuizView(QuizController quizController) {
 		this.quizController = quizController;
@@ -136,6 +178,12 @@ public class QuizView extends JFrame {
         btnEnviar.setBounds(180, 310, 160, 40);
         panel.add(btnEnviar);
         
+        lblTime = new JLabel("s");
+        lblTime.setBounds(350, 318, 50, 25);
+        panel.add(lblTime);
+        lblTime.setForeground(Color.WHITE);
+        lblTime.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        
         for (JRadioButton rdBtn: radioButtons) {
         	rdBtn.addActionListener(new ActionListener() {
             	public void actionPerformed(ActionEvent e) {
@@ -146,6 +194,10 @@ public class QuizView extends JFrame {
         
         btnEnviar.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		if (timer != null && timer.isRunning()) {
+        		    timer.stop();
+        		}
+
         		String answer="";
         		for (JRadioButton rdBtn: radioButtons) {
         			if (rdBtn.isSelected()) {
@@ -156,6 +208,5 @@ public class QuizView extends JFrame {
         		quizController.checkAnswer(answer);
         	}
         });
-        
     }
 }
