@@ -1,6 +1,11 @@
-CREATE DATABASE Laberinto;
+CREATE DATABASE IF NOT EXISTS Laberinto;
 
 USE Laberinto;
+
+DROP TABLE IF EXISTS Ranking;
+DROP TABLE IF EXISTS Disposition;
+DROP TABLE IF EXISTS Maze;
+DROP TABLE IF EXISTS Questions;
 
 CREATE TABLE Questions (
     ID_Questions INT AUTO_INCREMENT PRIMARY KEY ,
@@ -42,6 +47,11 @@ CREATE TABLE Disposition (
     Cell_Type ENUM('Free', 'Block', 'Crocodile', 'Medkit') NOT NULL,
     FOREIGN KEY (ID_Maze) REFERENCES Maze(ID_Maze) ON DELETE CASCADE
 );
+
+-- Crear un usuario para la conexion de java
+CREATE USER IF NOT EXISTS  'JavaLaberinto'@'localhost' IDENTIFIED BY 'Java12345';
+GRANT ALL PRIVILEGES ON Laberinto.* TO 'JavaLaberinto'@'localhost';
+FLUSH PRIVILEGES;
 
 INSERT INTO Questions (Question, AnswerCorrect, Answer2, Answer3, Answer4) VALUES
 ('¿Cuántos colores tiene el arcoíris?', '7', '5', '10', '3'),
@@ -157,4 +167,3 @@ INSERT INTO Questions (Question, AnswerCorrect, Answer2, Answer3, Answer4) VALUE
 ('¿Qué animal vive en el Polo Norte?', 'Oso polar', 'Pingüino', 'Foca', 'Morsa'),
 ('¿Qué planeta gira más rápido?', 'Júpiter', 'Tierra', 'Marte', 'Venus'),
 ('¿Qué fruta es roja y tiene semillas afuera?', 'Fresa', 'Manzana', 'Pera', 'Uva');
-
