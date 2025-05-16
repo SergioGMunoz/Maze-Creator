@@ -34,6 +34,28 @@ public class GameView extends JFrame {
 			}
 		});
 	}
+	
+	public void updateLbHealth(int health) {
+	    lbHealth.setText("Vida: " + health);
+	}
+
+	public void updateLbMedkits(int medkits) {
+	    lbMedkits.setText("Botiquines: " + medkits);
+	}
+
+	public void updateLbCrocodiles(int crocodiles) {
+	    lbCrocodiles.setText("Cocodrilos: " + crocodiles);
+	}
+	
+	public void updateBtnMoves(boolean[] moves) {
+		if (moves.length >= 4) {
+			btnUp.setEnabled(moves[0]);
+			btnDown.setEnabled(moves[1]);
+			btnLeft.setEnabled(moves[2]);
+			btnRight.setEnabled(moves[3]);
+		}	
+	}
+
 
 	/**
 	 * Create the frame.
@@ -61,7 +83,7 @@ public class GameView extends JFrame {
 	    statePanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
 	    contentPane.add(statePanel);
 
-	    lbHealth = new JLabel("Health: 100", SwingConstants.CENTER);
+	    lbHealth = new JLabel("Salud: 100", SwingConstants.CENTER);
 	    lbHealth.setForeground(Color.WHITE);
 	    lbHealth.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 	    lbHealth.setBounds(54, 20, 107, 25);
