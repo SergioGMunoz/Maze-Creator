@@ -65,6 +65,29 @@ public class GameDAO {
 	    return disposition;
 	}
 
-	
+	public void importQuestions() {
+	    try {	    	
+	    	String sql = "SELECT * FROM Questions";
+	    	PreparedStatement ps = connection.prepareStatement(sql);
+	    	ResultSet rs = ps.executeQuery();
+	    	
+	    	//Instanciar todas las preguntas para luego evitar repetidos
+	    	while (rs.next()) {
+	    		Question q = new Question(
+	    				rs.getInt("ID_Questions"),
+	    				rs.getString("Question"),
+	    				rs.getString("AnswerCorrect"),
+	    				rs.getString("Answer2"),
+	    				rs.getString("Answer3"),
+	    				rs.getString("Answer4")
+	    				);
+	    	}
+	    	
+	    }catch (SQLException e) {
+	    	System.err.println("❌ Error de SQL al importar preguntas");
+	    	e.printStackTrace();
+	    }
+	}
+
 }
 
