@@ -1,0 +1,115 @@
+package view;
+
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+public class GameView extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	private JLabel lbHealth, lbMedkits, lbCrocodiles;
+	private JButton btnUp, btnDown, btnLeft, btnRight, btnSurrender;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					GameView frame = new GameView();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public GameView() {
+		setTitle("Partida");
+	    setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+	    setBounds(100, 100, 700, 500);
+	    contentPane = new JPanel();
+	    contentPane.setBackground(new Color(40, 45, 60));
+	    setContentPane(contentPane);
+	    contentPane.setLayout(null);
+
+	    JLabel lbTitle = new JLabel("PARTIDA");
+	    lbTitle.setBounds(50, 20, 600, 40);
+	    lbTitle.setForeground(Color.WHITE);
+	    lbTitle.setFont(new Font("Segoe UI Black", Font.BOLD, 28));
+	    lbTitle.setHorizontalAlignment(SwingConstants.CENTER);
+	    contentPane.add(lbTitle);
+
+	    JPanel statePanel = new JPanel();
+	    statePanel.setBounds(50, 80, 600, 60);
+	    statePanel.setLayout(null);
+	    statePanel.setBackground(new Color(60, 70, 90));
+	    statePanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+	    contentPane.add(statePanel);
+
+	    lbHealth = new JLabel("Health: 100", SwingConstants.CENTER);
+	    lbHealth.setForeground(Color.WHITE);
+	    lbHealth.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+	    lbHealth.setBounds(54, 20, 107, 25);
+	    statePanel.add(lbHealth);
+
+	    lbMedkits = new JLabel("Medkits left: 3", SwingConstants.CENTER);
+	    lbMedkits.setForeground(Color.WHITE);
+	    lbMedkits.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+	    lbMedkits.setBounds(209, 20, 181, 25);
+	    statePanel.add(lbMedkits);
+
+	    lbCrocodiles = new JLabel("Crocodiles left: 5", SwingConstants.CENTER);
+	    lbCrocodiles.setForeground(Color.WHITE);
+	    lbCrocodiles.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+	    lbCrocodiles.setBounds(400, 20, 190, 25);
+	    statePanel.add(lbCrocodiles);
+
+	    JPanel controlPanel = new JPanel();
+	    controlPanel.setBounds(200, 160, 300, 200);
+	    controlPanel.setLayout(null);
+	    controlPanel.setBackground(new Color(60, 70, 90));
+	    contentPane.add(controlPanel);
+
+	    btnUp = new JButton("↑");
+	    btnUp.setFont(new Font("Segoe UI", Font.BOLD, 24));
+	    btnUp.setBounds(110, 39, 80, 50);
+	    controlPanel.add(btnUp);
+
+	    btnLeft = new JButton("←");
+	    btnLeft.setFont(new Font("Segoe UI", Font.BOLD, 24));
+	    btnLeft.setBounds(30, 90, 80, 50);
+	    controlPanel.add(btnLeft);
+
+	    btnRight = new JButton("→");
+	    btnRight.setFont(new Font("Segoe UI", Font.BOLD, 24));
+	    btnRight.setBounds(190, 90, 80, 50);
+	    controlPanel.add(btnRight);
+
+	    btnDown = new JButton("↓");
+	    btnDown.setFont(new Font("Segoe UI", Font.BOLD, 24));
+	    btnDown.setBounds(110, 90, 80, 50);
+	    controlPanel.add(btnDown);
+
+	    btnSurrender = new JButton("Rendirse");
+	    btnSurrender.setBounds(270, 390, 150, 40);
+	    btnSurrender.setFont(new Font("Segoe UI", Font.BOLD, 16));
+	    btnSurrender.setBackground(new Color(255, 0, 0));
+	    contentPane.add(btnSurrender);
+	}
+
+}
