@@ -64,5 +64,7 @@ public class GameDAO {
 	    Disposition disposition = new Disposition(maze, cells);
 	    return disposition;
 	}
+
+	
 }
 
