@@ -34,7 +34,7 @@ public class ConnectionDB {
     	try {
 			Class.forName("com.mysql.cj.jdbc.Driver"); 
 			connection = DriverManager.getConnection(url, user, pwd);
-			System.out.println("✔️ Conexión exitosa con la BBDD" + dbName);
+			System.out.println("✔️ Conexión exitosa con la BBDD: " + dbName);
     	} catch (ClassNotFoundException e) {
 			System.err.println("❌ Driver JDBC No encontrado");
 			e.printStackTrace();
