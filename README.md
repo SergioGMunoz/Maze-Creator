@@ -50,4 +50,4 @@ El administrador puede crear laberintos, colocar bloques y añadir diferentes pr
 
 ## 🚧 Estado actual
 
-> En desarrollo activo. Funcionalidades principales implementadas, se están puliendo detalles, integraciones y mejoras de usabilidad.
+> En desarrollo. Funcionalidades principales implementadas.
