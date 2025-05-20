@@ -72,7 +72,7 @@ public class CrearLaberinto extends JFrame {
             "Nombre del laberinto:", "Ancho del tablero:", "Alto del tablero:",
             "Número de cocodrilos:", "Número de botiquines:",
             "Daño por cocodrilo (por defecto 25):", "Vida por botiquín (por defecto 10):",
-            "Tiempo máximo para responder:", "Daño por respuesta errónea:",
+            "Segundos máximos para responder quiz:", "Daño por respuesta errónea:",
             "¿Permitir ayudas externas?"
         };
 

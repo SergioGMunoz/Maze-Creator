@@ -165,4 +165,27 @@ public class GameDAO {
         }
     }
     
+    // Inserta preguntas en la BBDD devuelve si ha sido insertado correctamente
+    public boolean guardarPregunta(String enunciado, String respuestaCorrecta,
+                                   String respuestaIncorrecta1, String respuestaIncorrecta2, String respuestaIncorrecta3) {
+        try  {
+        	String query = "INSERT INTO Questions (Question, AnswerCorrect, Answer2, Answer3, Answer4)"
+        			+ " VALUES (?, ?, ?, ?, ?)";
+        	PreparedStatement st = connection.prepareStatement(query);
+            st.setString(1, enunciado);
+            st.setString(2, respuestaCorrecta);
+            st.setString(3, respuestaIncorrecta1);
+            st.setString(4, respuestaIncorrecta2);
+            st.setString(5, respuestaIncorrecta3);
+
+            return st.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+        	System.out.println("❌ Error SQL al insertar nueva pregunta");
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    
 }
