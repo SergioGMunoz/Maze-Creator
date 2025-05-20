@@ -43,9 +43,9 @@ El administrador puede crear laberintos, colocar bloques y añadir diferentes pr
 - [Java JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 
 ### 🧩 Pasos para ejecutar el juego
-- Clona el programa en tu equipo git clone https://github.com/tu-usuario/nombre-del-repositorio.git
-- Corre el script de la Base de Datos Laberinto.sql
-- Ejecuta el prorama: java src/controller/Launcher.java
+- Clona el programa en tu equipo **git clone https://github.com/tu-usuario/nombre-del-repositorio.git**
+- Corre el script de la Base de Datos **Laberinto.sql**
+- Ejecuta el programa: **java src/controller/Launcher.java**
 ---
 
 ## 🚧 Estado actual
