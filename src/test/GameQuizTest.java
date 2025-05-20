@@ -4,7 +4,6 @@ import java.sql.SQLException;
 
 import controller.GameController;
 import model.ConnectionDB;
-import model.Disposition;
 
 public class GameQuizTest {
     public static void main(String[] args) {
@@ -18,7 +17,7 @@ public class GameQuizTest {
 				e.printStackTrace();
 			}
         }
-        
-        
+      
     }
 }
+

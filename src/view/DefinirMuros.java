@@ -1,106 +1,156 @@
 package view;
 
-
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridLayout;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import model.GameDAO;
 
 public class DefinirMuros extends JFrame {
+    private static final long serialVersionUID = 1L;
+    private JPanel contentPane;
+    private JPanel gridPanel;
+    private JButton[][] celdas;
+    private int filas;
+    private int columnas;
+    private boolean[][] esMuro;
+    private int idLaberinto;
 
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JPanel gridPanel;
-	private JButton[][] celdas;
-	private int filas;
-	private int columnas;
-	private boolean[][] esMuro;
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                DefinirMuros frame = new DefinirMuros(1, 10, 8); // Ejemplo con ID 1, 10x8
+                frame.setVisible(true);
+            }
+        });
+    }
 
-	public DefinirMuros(int ancho, int alto) {
-	    this.filas = alto;
-	    this.columnas = ancho;
-	    this.esMuro = new boolean[filas][columnas];
+    public DefinirMuros(int idLaberinto, int ancho, int alto) {
+        this.idLaberinto = idLaberinto;
+        this.filas = alto;
+        this.columnas = ancho;
+        this.esMuro = new boolean[filas][columnas];
 
-	    setTitle("Definir muros");
-	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    setBounds(100, 100, 800, 700);
-	    contentPane = new JPanel();
-	    contentPane.setBackground(new Color(40, 45, 60));
-	    contentPane.setLayout(null);
-	    setContentPane(contentPane);
+        configurarVentana();
+        crearInterfaz();
+    }
 
-	    JLabel lblTitulo = new JLabel("DEFINIR MUROS DEL LABERINTO");
-	    lblTitulo.setForeground(Color.WHITE);
-	    lblTitulo.setFont(new Font("Segoe UI Black", Font.BOLD, 24));
-	    lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-	    lblTitulo.setBounds(50, 20, 700, 40);
-	    contentPane.add(lblTitulo);
+    private void configurarVentana() {
+        setTitle("Definir muros");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setBounds(100, 100, 800, 700);
+        
+        contentPane = new JPanel();
+        contentPane.setBackground(new Color(40, 45, 60));
+        contentPane.setLayout(null);
+        setContentPane(contentPane);
+    }
 
-	    // Panel para la cuadrícula del laberinto
-	    gridPanel = new JPanel();
-	    gridPanel.setBounds(50, 80, 700, 500);
-	    gridPanel.setLayout(new GridLayout(filas, columnas, 2, 2));
-	    contentPane.add(gridPanel);
+    private void crearInterfaz() {
+        // Título
+        JLabel lblTitulo = new JLabel("DEFINIR MUROS DEL LABERINTO");
+        lblTitulo.setForeground(Color.WHITE);
+        lblTitulo.setFont(new Font("Segoe UI Black", Font.BOLD, 24));
+        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        lblTitulo.setBounds(50, 20, 700, 40);
+        contentPane.add(lblTitulo);
 
-	    // Crear botones de celda
-	    celdas = new JButton[filas][columnas];
-	    for (int i = 0; i < filas; i++) {
-	        for (int j = 0; j < columnas; j++) {
-	            JButton btnCelda = new JButton();
-	            btnCelda.setBackground(Color.WHITE);
-	            btnCelda.setOpaque(true);
-	            btnCelda.setBorder(new LineBorder(Color.GRAY));
-	            final int row = i;
-	            final int col = j;
-	            btnCelda.addActionListener(e -> toggleCelda(row, col));
-	            celdas[i][j] = btnCelda;
-	            gridPanel.add(btnCelda);
-	        }
-	    }
+        // Panel de la cuadrícula
+        gridPanel = new JPanel();
+        gridPanel.setBounds(50, 80, 700, 500);
+        gridPanel.setLayout(new GridLayout(filas, columnas, 2, 2));
+        contentPane.add(gridPanel);
 
-	    // Botón Confirmar
-	    JButton btnConfirmar = new JButton("Confirmar");
-	    btnConfirmar.setFont(new Font("Segoe UI", Font.BOLD, 16));
-	    btnConfirmar.setBackground(new Color(30, 200, 150));
-	    btnConfirmar.setBounds(250, 600, 140, 40);
-	    contentPane.add(btnConfirmar);
+        // Crear celdas
+        crearCeldas();
 
-	    // Botón Volver
-	    JButton btnVolver = new JButton("Volver");
-	    btnVolver.setFont(new Font("Segoe UI", Font.BOLD, 16));
-	    btnVolver.setBackground(new Color(30, 200, 150));
-	    btnVolver.setBounds(420, 600, 140, 40);
-	    contentPane.add(btnVolver);
+        // Botones
+        JButton btnConfirmar = new JButton("Confirmar");
+        btnConfirmar.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnConfirmar.setBackground(new Color(30, 200, 150));
+        btnConfirmar.setBounds(250, 600, 140, 40);
+        contentPane.add(btnConfirmar);
 
-	    // Acción Confirmar
-	    btnConfirmar.addActionListener(e -> {
-	        // Aquí podrías guardar la matriz esMuro al modelo del laberinto
-	        JOptionPane.showMessageDialog(this, "¡Muros definidos correctamente!");
-	    });
+        JButton btnVolver = new JButton("Volver");
+        btnVolver.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnVolver.setBackground(new Color(30, 200, 150));
+        btnVolver.setBounds(420, 600, 140, 40);
+        contentPane.add(btnVolver);
 
-	    btnVolver.addActionListener(e -> {
-	        dispose(); // o volver a la ventana anterior
-	    });
-	}
+        // Configurar listeners
+        btnConfirmar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                confirmarMuros();
+            }
+        });
 
-	private void toggleCelda(int row, int col) {
-	    esMuro[row][col] = !esMuro[row][col];
-	    celdas[row][col].setBackground(esMuro[row][col] ? Color.DARK_GRAY : Color.WHITE);
-	}
+        btnVolver.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	
+            }
+        });
+    }
 
-	// Puedes añadir un método getMuros() si necesitas recuperar la matriz luego
-	public boolean[][] getMuros() {
-	    return esMuro;
-	}
+    private void crearCeldas() {
+        celdas = new JButton[filas][columnas];
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                final int fila = i;
+                final int columna = j;
+                
+                JButton btnCelda = new JButton();
+                btnCelda.setBackground(Color.WHITE);
+                btnCelda.setOpaque(true);
+                btnCelda.setBorder(new LineBorder(Color.GRAY));
+                
+                btnCelda.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        alternarCelda(fila, columna);
+                    }
+                });
+                
+                celdas[i][j] = btnCelda;
+                gridPanel.add(btnCelda);
+            }
+        }
+    }
 
-	// Método main de prueba
-	public static void main(String[] args) {
-	    EventQueue.invokeLater(() -> {
-	        DefinirMuros frame = new DefinirMuros(10, 8); // ejemplo 10x8
-	        frame.setVisible(true);
-	    });
-	}
+    private void alternarCelda(int fila, int columna) {
+        esMuro[fila][columna] = !esMuro[fila][columna];
+        if (esMuro[fila][columna]) {
+            celdas[fila][columna].setBackground(Color.DARK_GRAY);
+            celdas[fila][columna].setText("Muro");
+        } else {
+            celdas[fila][columna].setBackground(Color.WHITE);
+            celdas[fila][columna].setText("");
+        }
+    }
+
+    private void confirmarMuros() {
+        try {
+            GameDAO dao = new GameDAO();
+            dao.guardarMuros(idLaberinto, esMuro);
+            
+            JOptionPane.showMessageDialog(this, 
+                "Muros guardados correctamente", 
+                "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            
+            dispose();
+            
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, 
+                "Error al guardar los muros: " + ex.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+
+    public boolean[][] getMuros() {
+        return esMuro;
+    }
 }
