@@ -87,7 +87,7 @@ public class QuizView extends JFrame {
     	{
     	    public void actionPerformed(ActionEvent e){
     	        seconds--;
-    	        System.out.println("Un segundo..."+seconds);
+    	        //System.out.println("Un segundo..."+seconds);
     	        if (seconds <= 0) {
     	        	seconds = 0;
     	        	quizController.checkAnswer("no-time-response");
