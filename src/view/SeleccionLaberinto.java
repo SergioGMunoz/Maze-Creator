@@ -9,9 +9,14 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+
+import controller.GameController;
+
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
 
@@ -21,6 +26,22 @@ public class SeleccionLaberinto extends JFrame {
 	private JPanel contentPane;
 	private JComboBox<String> comboLaberintos;
 	private JComboBox<String> comboDisposiciones;
+	// Por defecto sale el laberinto 1 disposición 1
+	private int selectedMazeId = 1;
+	private int selectedDispositionId = 1;
+	
+	// Método que lanza la ventana de partida aportando la id de laberinto y disposicion
+	private void pressBtnJugar() {
+		try {
+			GameController gc = new GameController(selectedMazeId, selectedDispositionId);
+			System.out.println("Jugando a ... " +selectedMazeId +selectedDispositionId);
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "El laberinto no se puede cargar correctamente", "Advertencia", JOptionPane.WARNING_MESSAGE);
+			System.err.println("❌ Error SQL con al jugar laberinto con id -> "+ selectedMazeId +
+					" y dispo id -> " + selectedDispositionId);
+			e.printStackTrace();
+		}
+	}
 
 	public static void main(String[] args) {
 	    EventQueue.invokeLater(() -> {
@@ -102,5 +123,7 @@ public class SeleccionLaberinto extends JFrame {
 	    	    btnVolver.setBackground(Color.GRAY);
 	    	    btnVolver.setForeground(Color.WHITE);
 	    	    btnVolver.setFont(new Font("Segoe UI", Font.BOLD, 14));
+	    	    
+	    btnJugar.addActionListener(e -> pressBtnJugar());
 	}
 }
