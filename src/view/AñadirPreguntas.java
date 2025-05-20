@@ -158,15 +158,15 @@ public class AñadirPreguntas extends JFrame {
         }
 
         // Validar que se haya seleccionado una respuesta correcta
-        int respuestaCorrecta = -1;
+        int indexRespuestaCorrecta = -1;
         for (int i = 0; i < opcionesCorrectas.length; i++) {
             if (opcionesCorrectas[i].isSelected()) {
-                respuestaCorrecta = i;
+                indexRespuestaCorrecta = i;
                 break;
             }
         }
 
-        if (respuestaCorrecta == -1) {
+        if (indexRespuestaCorrecta == -1) {
             JOptionPane.showMessageDialog(this, 
                 "Debes seleccionar la respuesta correcta", 
                 "Error", JOptionPane.ERROR_MESSAGE);
@@ -176,28 +176,44 @@ public class AñadirPreguntas extends JFrame {
         // Guardar en la base de datos
         try {
             GameDAO dao = new GameDAO();
-            dao.guardarPregunta(
-                enunciadoField.getText(),
-                respuestasFields[respuestaCorrecta].getText(),
-                respuestasFields[0].getText(),
-                respuestasFields[1].getText(),
-                respuestasFields[2].getText(),
-                respuestasFields[3].getText()
-            );
+
+            String enunciado = enunciadoField.getText();
+            String respuestaCorrecta = "";
+
+            // Extraer las 3 respuestas incorrectas (omitimos la correcta)
+            String [] incorrectas = new String[3];
+            int index = 0;
+            for (int i = 0; i < respuestasFields.length; i++) {
+                if (i != indexRespuestaCorrecta) {
+                    incorrectas[index++] = respuestasFields[i].getText();
+                }else {
+                	respuestaCorrecta = respuestasFields[i].getText();
+                }
+            }
             
-            JOptionPane.showMessageDialog(this, 
-                "Pregunta añadida correctamente", 
+            System.out.println("GUARDANDO PREGUNTAS...");
+            System.out.println("Enunciado ->" + enunciado);
+            System.out.println("Correcta ->" + respuestaCorrecta);
+            System.out.println("Anw ->" + incorrectas[0]);
+            System.out.println("Anw ->" + incorrectas[1]);
+            System.out.println("Anw ->" + incorrectas[2]);
+
+            dao.guardarPregunta(enunciado, respuestaCorrecta,
+                                incorrectas[0], incorrectas[1], incorrectas[2]);
+
+            JOptionPane.showMessageDialog(this,
+                "Pregunta añadida correctamente",
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            
-            // Limpiar campos después de guardar
+
             limpiarCampos();
-            
+
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, 
-                "Error al guardar la pregunta: " + ex.getMessage(), 
+            JOptionPane.showMessageDialog(this,
+                "Error al guardar la pregunta: " + ex.getMessage(),
                 "Error de base de datos", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
+
     }
 
     private void limpiarCampos() {
