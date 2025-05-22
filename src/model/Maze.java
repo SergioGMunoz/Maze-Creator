@@ -119,9 +119,4 @@ public class Maze {
 	public void setEnableHelp(Boolean enableHelp) {
 		this.enableHelp = enableHelp;
 	}
-	
-	
-
-    
-
 }

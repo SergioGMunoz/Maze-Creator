@@ -202,8 +202,8 @@ public class CrearLaberinto extends JFrame {
                 int idLaberinto = dao.guardarLaberinto(laberinto);
 
                 // Abrir pantalla para definir muros
-                abrirDefinirMuros(idLaberinto, ancho, alto);
-                dispose();
+                abrirDefinirMuros(idLaberinto, ancho, alto, numCocodrilos, numBotiquines);
+                setVisible(false);
 
             } catch (NumberFormatException ex) {
                 mostrarError("Por favor, introduzca números válidos en los campos numéricos", "Error de formato");
@@ -237,8 +237,8 @@ public class CrearLaberinto extends JFrame {
             // Validar dimensiones mínimas
             int ancho = Integer.parseInt(campos[1].getText());
             int alto = Integer.parseInt(campos[2].getText());
-            if (ancho < 4 || alto < 4) {
-                mostrarError("El tablero debe tener al menos un tamaño de 4x4", "Dimensiones inválidas");
+            if (ancho < 4 || ancho > 30 || alto < 4 || alto > 30) {
+                mostrarError("El tablero debe tener un tamaño entre 4x4 y 30x30", "Dimensiones inválidas");
                 return false;
             }
 
@@ -261,19 +261,19 @@ public class CrearLaberinto extends JFrame {
         }
     }
 
-    private void abrirDefinirMuros(int idLaberinto, int ancho, int alto) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    DefinirMuros definirMuros = new DefinirMuros(idLaberinto, ancho, alto);
-                    definirMuros.setVisible(true);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    mostrarError("Error al abrir la ventana de definición de muros: " + ex.getMessage(), "Error");
-                }
+    private void abrirDefinirMuros(int idLaberinto, int ancho, int alto, int numCocodrilos, int numMedkits) {
+        EventQueue.invokeLater(() -> {
+            try {
+                DefinirMuros definirMuros = new DefinirMuros(
+                    idLaberinto, ancho, alto, numCocodrilos, numMedkits, CrearLaberinto.this);
+                definirMuros.setVisible(true);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                mostrarError("Error al abrir la ventana de definición de muros: " + ex.getMessage(), "Error");
             }
         });
     }
+
 
     private void volverAPantallaAnterior() {
         dispose();

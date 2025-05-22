@@ -28,9 +28,5 @@ public class QuizController {
 		}else{
 			gameController.quizFail(quizView); 
 		};
-	}
-	
-	
-	
-	
+	}	
 }

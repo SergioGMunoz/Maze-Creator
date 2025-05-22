@@ -1,7 +1,5 @@
 package test;
 
-import java.sql.SQLException;
-
 import model.ConnectionDB;
 import view.CrearLaberinto;
 

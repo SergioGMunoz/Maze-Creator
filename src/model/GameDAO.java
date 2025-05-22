@@ -187,5 +187,44 @@ public class GameDAO {
         return false;
     }
 
+    public int obtenerUltimoIdDisposicion(int idLaberinto) throws SQLException {
+        String sql = "SELECT MAX(ID_Disposition) AS maxId FROM Disposition WHERE ID_Maze = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idLaberinto);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("maxId");
+            }
+        }
+        return 0;
+    }
+
+    public void insertarDisposicion(Disposition disp, int idDisposicion) throws SQLException {
+        String sql = "INSERT INTO Disposition (ID_Maze, ID_Disposition, Col_Maze, Row_Maze, Cell_Type) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            int[][] cells = disp.getCells();
+            for (int row = 0; row < disp.maze.getNumRow(); row++) {
+                for (int col = 0; col < disp.maze.getNumCol(); col++) {
+                    ps.setInt(1, disp.maze.getId());
+                    ps.setInt(2, idDisposicion);
+                    ps.setInt(3, col);
+                    ps.setInt(4, row);
+
+                    String tipo = switch (cells[row][col]) {
+                        case 0 -> "Free";
+                        case 1 -> "Block";
+                        case 2 -> "Crocodile";
+                        case 3 -> "Medkit";
+                        default -> "Free";
+                    };
+
+                    ps.setString(5, tipo);
+                    ps.addBatch();
+                }
+            }
+            ps.executeBatch();
+        }
+    }
+
     
 }
