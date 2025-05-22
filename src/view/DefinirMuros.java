@@ -1,54 +1,45 @@
 package view;
 
-import java.awt.Color;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.SQLException;
+import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import model.GameDAO;
+
+import controller.GameController;
 
 public class DefinirMuros extends JFrame {
     private static final long serialVersionUID = 1L;
+
     private JPanel contentPane;
     private JPanel gridPanel;
-    private JButton[][] celdas;
+    private JButton[][] botones;
+    private boolean[][] esMuro;
+
+    private int idLaberinto;
     private int filas;
     private int columnas;
-    private boolean[][] esMuro;
-    private int idLaberinto;
+    private int numCocodrilos;
+    private int numMedkits;
+    private JFrame ventanaAnterior;
 
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                DefinirMuros frame = new DefinirMuros(1, 10, 8); // Ejemplo con ID 1, 10x8
-                frame.setVisible(true);
-            }
-        });
-    }
-
-    public DefinirMuros(int idLaberinto, int ancho, int alto) {
+    public DefinirMuros(int idLaberinto, int columnas, int filas, int numCocodrilos, int numMedkits, JFrame ventanaAnterior) {
         this.idLaberinto = idLaberinto;
-        this.filas = alto;
-        this.columnas = ancho;
-        this.esMuro = new boolean[filas][columnas];
+        this.columnas = columnas;
+        this.filas = filas;
+        this.numCocodrilos = numCocodrilos;
+        this.numMedkits = numMedkits;
+        this.ventanaAnterior = ventanaAnterior;
 
-        configurarVentana();
-        crearInterfaz();
-    }
-
-    private void configurarVentana() {
-        setTitle("Definir muros");
+        setTitle("Definir Muros");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 800, 700);
-        
+
         contentPane = new JPanel();
         contentPane.setBackground(new Color(40, 45, 60));
         contentPane.setLayout(null);
         setContentPane(contentPane);
+
+        crearInterfaz();
     }
 
     private void crearInterfaz() {
@@ -67,90 +58,90 @@ public class DefinirMuros extends JFrame {
         contentPane.add(gridPanel);
 
         // Crear celdas
-        crearCeldas();
+        botones = new JButton[filas][columnas];
+        esMuro = new boolean[filas][columnas];
+        for (int row = 0; row < filas; row++) {
+            for (int col = 0; col < columnas; col++) {
+                final int finalRow = row;
+                final int finalCol = col;
 
-        // Botones
+                JButton boton = new JButton();
+                boton.setBackground(Color.WHITE);
+                boton.setOpaque(true);
+                boton.setBorder(new LineBorder(Color.GRAY));
+
+                // Entrada (arriba izquierda)
+                if (row == 0 && col == 0) {
+                    boton.setBackground(Color.GREEN);
+                    boton.setEnabled(false);
+                    boton.setText("Entrada");
+                    esMuro[row][col] = false;
+                }
+                // Salida (abajo derecha)
+                else if (row == filas - 1 && col == columnas - 1) {
+                    boton.setBackground(Color.RED);
+                    boton.setEnabled(false);
+                    boton.setText("Salida");
+                    esMuro[row][col] = false;
+                }
+
+                boton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        toggleMuro(finalRow, finalCol);
+                    }
+                });
+
+                botones[row][col] = boton;
+                gridPanel.add(boton);
+            }
+        }
+
         JButton btnConfirmar = new JButton("Confirmar");
         btnConfirmar.setFont(new Font("Segoe UI", Font.BOLD, 16));
         btnConfirmar.setBackground(new Color(30, 200, 150));
         btnConfirmar.setBounds(250, 600, 140, 40);
-        contentPane.add(btnConfirmar);
-
-        JButton btnVolver = new JButton("Volver");
-        btnVolver.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btnVolver.setBackground(new Color(30, 200, 150));
-        btnVolver.setBounds(420, 600, 140, 40);
-        contentPane.add(btnVolver);
-
-        // Configurar listeners
         btnConfirmar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                confirmarMuros();
+                guardarDisposicion();
             }
         });
+        contentPane.add(btnConfirmar);
 
-        btnVolver.addActionListener(new ActionListener() {
+        JButton btnCancelar = new JButton("Volver");
+        btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnCancelar.setBackground(new Color(30, 200, 150));
+        btnCancelar.setBounds(420, 600, 140, 40);
+        btnCancelar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	
+                dispose();
+                ventanaAnterior.setVisible(true);
             }
         });
+        contentPane.add(btnCancelar);
     }
 
-    private void crearCeldas() {
-        celdas = new JButton[filas][columnas];
-        for (int i = 0; i < filas; i++) {
-            for (int j = 0; j < columnas; j++) {
-                final int fila = i;
-                final int columna = j;
-                
-                JButton btnCelda = new JButton();
-                btnCelda.setBackground(Color.WHITE);
-                btnCelda.setOpaque(true);
-                btnCelda.setBorder(new LineBorder(Color.GRAY));
-                
-                btnCelda.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        alternarCelda(fila, columna);
-                    }
-                });
-                
-                celdas[i][j] = btnCelda;
-                gridPanel.add(btnCelda);
-            }
-        }
-    }
 
-    private void alternarCelda(int fila, int columna) {
-        esMuro[fila][columna] = !esMuro[fila][columna];
-        if (esMuro[fila][columna]) {
-            celdas[fila][columna].setBackground(Color.DARK_GRAY);
-            celdas[fila][columna].setText("Muro");
+    // Alternar entre muro y no muro
+    private void toggleMuro(int row, int col) {
+        esMuro[row][col] = !esMuro[row][col];
+        if (esMuro[row][col]) {
+            botones[row][col].setBackground(Color.DARK_GRAY);
+            botones[row][col].setText("Muro");
         } else {
-            celdas[fila][columna].setBackground(Color.WHITE);
-            celdas[fila][columna].setText("");
+            botones[row][col].setBackground(Color.WHITE);
+            botones[row][col].setText("");
         }
     }
 
-    private void confirmarMuros() {
-        try {
-            GameDAO dao = new GameDAO();
-            dao.guardarMuros(idLaberinto, esMuro);
-            
-            JOptionPane.showMessageDialog(this, 
-                "Muros guardados correctamente", 
-                "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            
-            dispose();
-            
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, 
-                "Error al guardar los muros: " + ex.getMessage(), 
-                "Error", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
-        }
-    }
+    // Guardar disposición
+    private void guardarDisposicion() {
+        GameController.crearDisposicion(idLaberinto, esMuro, numCocodrilos, numMedkits);
 
-    public boolean[][] getMuros() {
-        return esMuro;
+        JOptionPane.showMessageDialog(this, 
+            "Disposición creada correctamente", 
+            "Éxito", 
+            JOptionPane.INFORMATION_MESSAGE);
+
+        dispose();
     }
 }

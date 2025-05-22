@@ -192,4 +192,3 @@ public class GameView extends JFrame {
 	    });
 	}
 }
-

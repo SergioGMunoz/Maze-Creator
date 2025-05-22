@@ -10,21 +10,31 @@ public class Disposition {
         this.cells = cells;
     }
 
-    public void printDisposition() {
-        System.out.println("Disposición:");
-        for (int row = 0; row < maze.numRow; row++) {
-            for (int col = 0; col < maze.numCol; col++) {
-                System.out.println(cells[col][row]);
+    public void añadirCocodrilosYMedkits(int numCocodrilos, int numMedkits) {
+        int filas = maze.getNumRow();
+        int columnas = maze.getNumCol();
+        java.util.Random rand = new java.util.Random();
+
+        for (int i = 0; i < numCocodrilos;) {
+            int row = rand.nextInt(filas);
+            int col = rand.nextInt(columnas);
+            if (cells[row][col] == 0 && !(row == 0 && col == 0) && !(row == filas - 1 && col == columnas - 1)) {
+                cells[row][col] = 2;
+                i++;
             }
-            System.out.println();
+        }
+
+        for (int i = 0; i < numMedkits;) {
+            int row = rand.nextInt(filas);
+            int col = rand.nextInt(columnas);
+            if (cells[row][col] == 0 && !(row == 0 && col == 0) && !(row == filas - 1 && col == columnas - 1)) {
+                cells[row][col] = 3;
+                i++;
+            }
         }
     }
 
-	public int[][] getCells() {
-		return cells;
-	}
-    
-    
-    
-    
+    public int[][] getCells() {
+        return cells;
+    }
 }

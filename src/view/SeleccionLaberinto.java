@@ -124,6 +124,11 @@ public class SeleccionLaberinto extends JFrame {
 	    	    btnVolver.setForeground(Color.WHITE);
 	    	    btnVolver.setFont(new Font("Segoe UI", Font.BOLD, 14));
 	    	    
-	    btnJugar.addActionListener(e -> pressBtnJugar());
+	    	    btnJugar.addActionListener(new ActionListener() {
+	    	        public void actionPerformed(ActionEvent e) {
+	    	            pressBtnJugar();
+	    	        }
+	    	    });
+
 	}
 }

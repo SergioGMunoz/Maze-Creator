@@ -184,5 +184,33 @@ public class GameController {
 		//Logica que instancia una pantalla Ranking
 	}
 	
-}
+	public static void crearDisposicion(int idLaberinto, boolean[][] muros, int numCocodrilos, int numMedkits) {
+	    try {
+	        GameDAO dao = new GameDAO();
+	        Maze maze = dao.getMazeById(idLaberinto);
 
+	        int nuevoId = dao.obtenerUltimoIdDisposicion(idLaberinto) + 1;
+	        int[][] cells = new int[maze.getNumRow()][maze.getNumCol()];
+
+	        for (int row = 0; row < maze.getNumRow(); row++) {
+	            for (int col = 0; col < maze.getNumCol(); col++) {
+	                cells[row][col] = muros[row][col] ? 1 : 0;
+	            }
+	        }
+
+	        // Proteger entrada y salida
+	        cells[0][0] = 0;
+	        cells[maze.getNumRow() - 1][maze.getNumCol() - 1] = 0;
+
+	        Disposition disp = new Disposition(maze, cells);
+	        disp.añadirCocodrilosYMedkits(numCocodrilos, numMedkits);
+
+	        dao.insertarDisposicion(disp, nuevoId);
+
+	        System.out.println("✅ Disposición creada con ID: " + nuevoId);
+	    } catch (SQLException e) {
+	        System.err.println("❌ Error al crear disposición: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	}
+}
