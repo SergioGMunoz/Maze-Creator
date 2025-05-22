@@ -189,3 +189,4 @@ INSERT INTO Disposition (ID_Disposition, ID_Maze, Col_Maze, Row_Maze, Cell_Type)
 SELECT * FROM Disposition;
 SELECT * FROM Maze;
 
+SELECT * FROM Questions ORDER BY id_questions DESC;;

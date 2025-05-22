@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Random;
+
 public class Disposition {
     public Maze maze;
     // 0 Free, 1 Block, 2 Crocodile, 3 MedKit
@@ -13,7 +15,7 @@ public class Disposition {
     public void añadirCocodrilosYMedkits(int numCocodrilos, int numMedkits) {
         int filas = maze.getNumRow();
         int columnas = maze.getNumCol();
-        java.util.Random rand = new java.util.Random();
+        Random rand = new Random();
 
         for (int i = 0; i < numCocodrilos;) {
             int row = rand.nextInt(filas);
