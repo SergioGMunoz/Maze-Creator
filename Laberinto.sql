@@ -29,15 +29,6 @@ CREATE TABLE Maze (
     EnableHelp BOOLEAN NOT NULL
 );
 
-CREATE TABLE Ranking (
-    ID_Ranking INT AUTO_INCREMENT PRIMARY KEY,
-    ID_Maze INT,
-    User VARCHAR(100) NOT NULL,
-    Win BOOLEAN NOT NULL,
-    Hp INT NOT NULL,
-    FOREIGN KEY (ID_Maze) REFERENCES Maze(ID_Maze) ON DELETE CASCADE
-);
-
 CREATE TABLE Disposition (
     ID_Disposition INT NOT NULL,
     ID_Maze INT NOT NULL,
@@ -48,6 +39,15 @@ CREATE TABLE Disposition (
     FOREIGN KEY (ID_Maze) REFERENCES Maze(ID_Maze) ON DELETE CASCADE
 );
 
+CREATE TABLE Ranking (
+    ID_Ranking INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Maze INT,
+    ID_Disposition INT,
+    User VARCHAR(100) NOT NULL,
+    Win BOOLEAN NOT NULL,
+    Hp INT NOT NULL,
+    FOREIGN KEY (ID_Maze) REFERENCES Maze(ID_Maze) ON DELETE CASCADE,
+);
 
 -- Crear un usuario para la conexion de java
 CREATE USER IF NOT EXISTS  'JavaLaberinto'@'localhost' IDENTIFIED BY 'Java12345';
