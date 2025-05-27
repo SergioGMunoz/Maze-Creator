@@ -61,7 +61,7 @@ public class RankingDAO {
 		        }
 
 		    } catch (SQLException e) {
-		        System.err.println("❌ Error SQL al obtener ranking resumen: " + e.getMessage());
+		         System.err.println("❌ Error SQL al obtener ranking: " + e.getMessage());
 		    }
 
 		    return data;

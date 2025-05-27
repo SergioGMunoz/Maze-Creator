@@ -173,4 +173,9 @@ public class PantallaInicio extends JFrame {
             JOptionPane.showMessageDialog(this, "Selecciona un tipo de usuario.", "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
     }
+
+	public static void setUser(String string) {
+		usuario = string;
+		
+	}
 }
