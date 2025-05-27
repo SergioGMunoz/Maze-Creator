@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -87,7 +88,12 @@ public class GameView extends JFrame {
 	
 	/**
 	 * Create the frame.
+	 * @throws SQLException 
 	 */
+	public GameView(int mazeId, int dispositionId) throws SQLException {
+	    this(new GameController(mazeId, dispositionId));
+	}
+
 	public GameView(GameController gameController) {
 		this.gameController = gameController;
 		setTitle("Partida");

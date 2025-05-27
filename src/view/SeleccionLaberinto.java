@@ -14,9 +14,15 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import controller.GameController;
+import model.ConnectionDB;
 
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import java.awt.event.ActionEvent;
 
 
@@ -26,22 +32,80 @@ public class SeleccionLaberinto extends JFrame {
 	private JPanel contentPane;
 	private JComboBox<String> comboLaberintos;
 	private JComboBox<String> comboDisposiciones;
+	private HashMap<String, Integer> mazeNameToIdMap = new HashMap<>();
+
 	// Por defecto sale el laberinto 1 disposición 1
 	private int selectedMazeId = 1;
 	private int selectedDispositionId = 1;
 	
+	private int carlosCrearDisposicion() {
+	    int nuevaDisposicionId = -1;
+
+	    String sqlInsert = "INSERT INTO Disposition DEFAULT VALUES";
+
+	    try (Connection conn = ConnectionDB.getConnection();
+	         Statement stmt = conn.createStatement()) {
+
+	        int filasAfectadas = stmt.executeUpdate(sqlInsert, Statement.RETURN_GENERATED_KEYS);
+
+	        if (filasAfectadas == 0) {
+	            throw new SQLException("No se pudo crear la nueva disposición.");
+	        }
+
+	        try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+	            if (generatedKeys.next()) {
+	                nuevaDisposicionId = generatedKeys.getInt(1);
+	            } else {
+	                throw new SQLException("No se pudo obtener el ID de la nueva disposición.");
+	            }
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(this, "Error al crear nueva disposición", "Error", JOptionPane.ERROR_MESSAGE);
+	    }
+
+	    return nuevaDisposicionId;
+	}
+
+	
 	// Método que lanza la ventana de partida aportando la id de laberinto y disposicion
 	private void pressBtnJugar() {
-		try {
-			GameController gc = new GameController(selectedMazeId, selectedDispositionId);
-			System.out.println("Jugando a ... " +selectedMazeId +selectedDispositionId);
-		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(this, "El laberinto no se puede cargar correctamente", "Advertencia", JOptionPane.WARNING_MESSAGE);
-			System.err.println("❌ Error SQL con al jugar laberinto con id -> "+ selectedMazeId +
-					" y dispo id -> " + selectedDispositionId);
-			e.printStackTrace();
-		}
+	    try {
+	        // Obtener nombre del laberinto y buscar su ID
+	        String mazeNameSelected = (String) comboLaberintos.getSelectedItem();
+	        selectedMazeId = mazeNameToIdMap.getOrDefault(mazeNameSelected, 1); // Default = 1
+
+	        // Obtener ID disposición seleccionada
+	        String dispoIdSelectedStr = (String) comboDisposiciones.getSelectedItem();
+
+	        if ("Nueva Disposicion".equals(dispoIdSelectedStr)) {
+	            // Aquí llamas al método para crear la nueva disposición y obtener su ID
+	            selectedDispositionId = carlosCrearDisposicion();
+	        } 
+	        else 
+	        	if (dispoIdSelectedStr != null && dispoIdSelectedStr.startsWith("Disposicion: ")) {
+	            try {
+	                selectedDispositionId = Integer.parseInt(dispoIdSelectedStr.substring("Disposicion: ".length()));
+	            } catch (NumberFormatException e) {
+	                selectedDispositionId = 1; // Valor por defecto
+	            }
+	        } 
+	        	else {
+	            selectedDispositionId = 1; // Valor por defecto
+	        }
+
+	        GameView gameView = new GameView(selectedMazeId, selectedDispositionId);
+	        gameView.setVisible(true);
+	        dispose();
+
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(this, "No se puede iniciar el juego correctamente", "Advertencia", JOptionPane.WARNING_MESSAGE);
+	        e.printStackTrace();
+	    }
 	}
+
+
 
 	public static void main(String[] args) {
 	    EventQueue.invokeLater(() -> {
@@ -86,9 +150,26 @@ public class SeleccionLaberinto extends JFrame {
 	    comboLaberintos = new JComboBox<>();
 	    comboLaberintos.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 	    comboLaberintos.setBounds(30, 55, 340, 25);
-	    comboLaberintos.addItem("Laberinto 1");
-	    comboLaberintos.addItem("Laberinto 2");
-	    comboLaberintos.addItem("Laberinto 3");
+	    try {
+	        Connection conn = ConnectionDB.getConnection();
+	        Statement stmt = conn.createStatement();
+	        ResultSet rs = stmt.executeQuery("SELECT ID_Maze, Name FROM Maze");
+
+	        while (rs.next()) {
+	            int id = rs.getInt("ID_Maze");
+	            String nombre = rs.getString("Name");
+	            comboLaberintos.addItem(nombre);
+	            mazeNameToIdMap.put(nombre, id);
+	        }
+
+	        rs.close();
+	        stmt.close();
+	        conn.close();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(this, "Error al cargar los laberintos desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+	    }
+
 	    panel.add(comboLaberintos);
 
 	    JLabel lblDispo = new JLabel("Selecciona una disposición (opcional):");
@@ -100,10 +181,25 @@ public class SeleccionLaberinto extends JFrame {
 	    comboDisposiciones = new JComboBox<>();
 	    comboDisposiciones.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 	    comboDisposiciones.setBounds(30, 125, 340, 25);
-	    comboDisposiciones.addItem("Ninguna");
-	    comboDisposiciones.addItem("Disposición A");
-	    comboDisposiciones.addItem("Disposición B");
-	    comboDisposiciones.addItem("Disposición C");
+	    try {
+	        Connection conn = ConnectionDB.getConnection();
+	        Statement stmt = conn.createStatement();
+	        comboDisposiciones.addItem("Nueva Disposicion");
+
+	     ResultSet rs = stmt.executeQuery("SELECT ID_Disposition FROM Disposition");
+	     while (rs.next()) {
+	         String dispoId = rs.getString("ID_Disposition");
+	         comboDisposiciones.addItem("Disposicion: " + dispoId);
+	     }
+
+	        rs.close();
+	        stmt.close();
+	        conn.close();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(this, "Error al cargar las disposiciones desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+	    }
+
 	    panel.add(comboDisposiciones);
 
 	    JButton btnJugar = new JButton("Jugar");
@@ -116,6 +212,10 @@ public class SeleccionLaberinto extends JFrame {
 	    	    JButton btnVolver = new JButton("Volver");
 	    	    btnVolver.addActionListener(new ActionListener() {
 	    	    	public void actionPerformed(ActionEvent e) {
+	    	    		PantallaInicio inicio = new PantallaInicio();
+	                    inicio.setVisible(true);
+	                    dispose();	                
+	                    
 	    	    	}
 	    	    });
 	    	    btnVolver.setBounds(530, 401, 120, 30);
