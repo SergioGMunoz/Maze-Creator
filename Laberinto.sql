@@ -186,7 +186,7 @@ INSERT INTO Disposition (ID_Disposition, ID_Maze, Col_Maze, Row_Maze, Cell_Type)
 
 
 
-SELECT * FROM Disposition;
+SELECT count(*) FROM Disposition WHERE Cell_Type = 'MedKit' AND id_maze = 3;
 SELECT * FROM Maze;
 
-SELECT * FROM Questions ORDER BY id_questions DESC;;
+SELECT * FROM Questions ORDER BY id_questionsDESC;;
