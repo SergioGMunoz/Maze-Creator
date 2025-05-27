@@ -205,7 +205,7 @@ public class GameController {
 		
 		// Abrir pestaña ranking
 		gameView.dispose();
-		Ranking ranking = new Ranking(maze.getId());
+		Ranking ranking = new Ranking(maze.getId(), idDisposition, win);
 	}
 	
 	

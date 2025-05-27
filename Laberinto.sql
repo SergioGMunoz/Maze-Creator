@@ -46,7 +46,7 @@ CREATE TABLE Ranking (
     User VARCHAR(100) NOT NULL,
     Win BOOLEAN NOT NULL,
     Hp INT NOT NULL,
-    FOREIGN KEY (ID_Maze) REFERENCES Maze(ID_Maze) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Maze) REFERENCES Maze(ID_Maze) ON DELETE CASCADE
 );
 
 -- Crear un usuario para la conexion de java
