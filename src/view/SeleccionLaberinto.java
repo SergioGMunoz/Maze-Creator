@@ -3,6 +3,13 @@ package view;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -15,15 +22,6 @@ import javax.swing.SwingConstants;
 
 import controller.GameController;
 import model.ConnectionDB;
-
-import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
-import java.awt.event.ActionEvent;
 
 
 public class SeleccionLaberinto extends JFrame {
@@ -95,8 +93,7 @@ public class SeleccionLaberinto extends JFrame {
 	            selectedDispositionId = 1; // Valor por defecto
 	        }
 
-	        GameView gameView = new GameView(selectedMazeId, selectedDispositionId);
-	        gameView.setVisible(true);
+	        GameController gameController = new GameController(selectedMazeId, selectedDispositionId);
 	        dispose();
 
 	    } catch (Exception e) {
@@ -212,6 +209,7 @@ public class SeleccionLaberinto extends JFrame {
 	    	    JButton btnVolver = new JButton("Volver");
 	    	    btnVolver.addActionListener(new ActionListener() {
 	    	    	public void actionPerformed(ActionEvent e) {
+	    	    		System.out.println("VOLVIENDO");
 	    	    		PantallaInicio inicio = new PantallaInicio();
 	                    inicio.setVisible(true);
 	                    dispose();	                

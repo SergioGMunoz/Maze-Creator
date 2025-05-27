@@ -4,6 +4,7 @@ import java.util.Random;
 
 public class Disposition {
     public Maze maze;
+    
     // 0 Free, 1 Block, 2 Crocodile, 3 MedKit
     public int[][] cells;
 

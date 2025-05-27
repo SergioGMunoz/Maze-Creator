@@ -23,11 +23,12 @@ public class Ranking extends JFrame {
 	private JComboBox<String> comboLaberintos;
 	private JComboBox<String> comboDisposiciones;
 	private JButton btnVolverAJugar;
+	private int idMaze;
 
 	public static void main(String[] args) {
 	    EventQueue.invokeLater(() -> {
 	        try {
-	            Ranking frame = new Ranking();
+	            Ranking frame = new Ranking(0);
 	            frame.setVisible(true);
 	        } catch (Exception e) {
 	            e.printStackTrace();
@@ -35,7 +36,10 @@ public class Ranking extends JFrame {
 	    });
 	}
 
-	public Ranking() {
+	public Ranking(int idMaze) {
+		// Aqui paso el laberinto del cual mostrar el ranking
+		this.idMaze = idMaze; 
+		
 	    setTitle("Ranking");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    setBounds(100, 100, 750, 550);
@@ -79,16 +83,6 @@ public class Ranking extends JFrame {
 	    tablaRanking.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
 	    tablaRanking.setModel(new DefaultTableModel(
 	        new Object[][] {
-	            {"1", "JugadorA", "300 pts"},
-	            {"2", "JugadorB", "280 pts"},
-	            {"3", "JugadorC", "260 pts"},
-	            {"4", "JugadorD", "250 pts"},
-	            {"5", "JugadorE", "240 pts"},
-	            {"6", "JugadorF", "230 pts"},
-	            {"7", "JugadorG", "220 pts"},
-	            {"8", "JugadorH", "210 pts"},
-	            {"9", "JugadorI", "200 pts"},
-	            {"10", "JugadorJ", "190 pts"},
 	        },
 	        new String[] {"Posición", "Jugador", "Puntos"}
 	    ));

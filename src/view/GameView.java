@@ -90,9 +90,6 @@ public class GameView extends JFrame {
 	 * Create the frame.
 	 * @throws SQLException 
 	 */
-	public GameView(int mazeId, int dispositionId) throws SQLException {
-	    this(new GameController(mazeId, dispositionId));
-	}
 
 	public GameView(GameController gameController) {
 		this.gameController = gameController;

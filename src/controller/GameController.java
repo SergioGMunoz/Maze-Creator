@@ -8,6 +8,7 @@ import model.Disposition;
 import model.GameDAO;
 import model.Maze;
 import view.GameView;
+import view.Ranking;
 
 public class GameController {
 	
@@ -180,6 +181,8 @@ public class GameController {
 	
 	private void goRanking(boolean win) {
 		System.out.println("Se acabo la partida, ganaste -> " + win);
+		// Inserta en el ranking de la BBDD
+		Ranking ranking = new Ranking(maze.getId());
 		gameView.dispose();
 		//Logica que instancia una pantalla Ranking
 	}
