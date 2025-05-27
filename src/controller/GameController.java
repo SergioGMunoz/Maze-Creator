@@ -7,7 +7,9 @@ import javax.swing.JFrame;
 import model.Disposition;
 import model.GameDAO;
 import model.Maze;
+import model.RankingDAO;
 import view.GameView;
+import view.PantallaInicio;
 import view.Ranking;
 
 public class GameController {
@@ -18,9 +20,9 @@ public class GameController {
 	GameDAO gameDAO = new GameDAO();
 	GameView gameView = new GameView(this);
 	
-	
 	Maze maze;
 	Disposition disposition;
+	int idDisposition;
 	int health = 100;
 	int col = 0;
 	int row = 0;
@@ -31,6 +33,7 @@ public class GameController {
 		// Recibe ID e instancia el laberinto y disposición 
 		this.maze = gameDAO.getMazeById(mazeId);
 		this.disposition = gameDAO.getDispositionById(maze, dispositionId);
+		this.idDisposition = dispositionId;
 		
 		// Instanciar todas las preguntas
 		gameDAO.importQuestions();
@@ -181,11 +184,31 @@ public class GameController {
 	
 	private void goRanking(boolean win) {
 		System.out.println("Se acabo la partida, ganaste -> " + win);
+		
 		// Inserta en el ranking de la BBDD
-		Ranking ranking = new Ranking(maze.getId());
+		Object [] data = {
+				maze.getId(),
+				idDisposition,
+				PantallaInicio.getUser(),
+				win,
+				health
+				};
+		
+		try {
+			RankingDAO rankingDAO= new RankingDAO();
+			rankingDAO.insertRanking(data);
+			
+		} catch (SQLException e) {
+			System.out.println("Error al crear RankingDAO");
+			e.printStackTrace();
+		}
+		
+		// Abrir pestaña ranking
 		gameView.dispose();
-		//Logica que instancia una pantalla Ranking
+		Ranking ranking = new Ranking(maze.getId());
 	}
+	
+	
 	
 	public static void crearDisposicion(int idLaberinto, boolean[][] muros, int numCocodrilos, int numMedkits) {
 	    try {
