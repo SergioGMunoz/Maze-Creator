@@ -183,10 +183,3 @@ INSERT INTO Disposition (ID_Disposition, ID_Maze, Col_Maze, Row_Maze, Cell_Type)
 (1, 1, 1, 0, 'Crocodile'),
 (1, 1, 0, 1, 'Medkit'),
 (1, 1, 1, 1, 'Free');
-
-
-
-SELECT count(*) FROM Disposition WHERE Cell_Type = 'MedKit' AND id_maze = 3;
-SELECT * FROM Maze;
-
-SELECT * FROM Questions ORDER BY id_questionsDESC;;
