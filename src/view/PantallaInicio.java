@@ -16,7 +16,7 @@ public class PantallaInicio extends JFrame {
     private JLabel lblInput;
     private JRadioButton rdbtnAdmin;
     private JRadioButton rdbtnUsuario;
-    private String usuario;
+    private static String usuario;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -29,6 +29,11 @@ public class PantallaInicio extends JFrame {
                 }
             }
         });
+    }
+    
+    // Devuelve el usuario registrado
+    public static String getUser() {
+    	return usuario;
     }
 
     public PantallaInicio() {

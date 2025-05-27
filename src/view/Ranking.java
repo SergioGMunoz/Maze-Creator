@@ -3,28 +3,29 @@ package view;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
+
+import model.RankingDAO;
 
 public class Ranking extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTable tablaRanking;
-	private JComboBox<String> comboLaberintos;
-	private JComboBox<String> comboDisposiciones;
 	private JButton btnVolverAJugar;
 	private int idMaze;
-
+	private RankingDAO rankingDAO;
+	private DefaultTableModel model;
 	public static void main(String[] args) {
 	    EventQueue.invokeLater(() -> {
 	        try {
@@ -35,11 +36,50 @@ public class Ranking extends JFrame {
 	        }
 	    });
 	}
-
+	
 	public Ranking(int idMaze) {
-		// Aqui paso el laberinto del cual mostrar el ranking
 		this.idMaze = idMaze; 
 		
+		 this.model = new DefaultTableModel(
+			        new Object[][] {
+			        },
+			        new String[] {"Usuario", "Disposición", "Vida", "Victoria"}
+			    );
+		
+		try {
+			this.rankingDAO  = new RankingDAO();
+		} catch (SQLException e) {
+			System.err.println("Error al crear objeto RankingDAO");
+			e.printStackTrace();
+		}
+		
+		// Actualizar datos del ranking
+		renderRanking(rankingDAO.getRankingsByMazeId(idMaze));
+		init();
+	}
+	
+	private void renderRanking(ArrayList <Object[]> data) {
+		    model.setRowCount(0); // Limpiar modelo
+
+		    for (Object[] fila : data) {
+		    	
+		    	String victoria = "";
+		    	if((boolean) fila[3]) {
+		    		victoria="Si";
+		    	}else {
+		    		victoria="No";
+		    	}
+		    
+		        model.addRow(new Object[] {
+		            fila[0],      
+		            fila[1],     
+		            fila[2],      
+		            victoria     
+		        });
+		    }
+	}
+
+	public void init() {
 	    setTitle("Ranking");
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    setBounds(100, 100, 750, 550);
@@ -55,22 +95,6 @@ public class Ranking extends JFrame {
 	    lblTitulo.setBounds(50, 20, 650, 40);
 	    contentPane.add(lblTitulo);
 
-	    // Selector de laberintos
-	    comboLaberintos = new JComboBox<>();
-	    comboLaberintos.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-	    comboLaberintos.setBounds(60, 80, 250, 30);
-	    comboLaberintos.addItem("Laberinto 1");
-	    comboLaberintos.addItem("Laberinto 2");
-	    contentPane.add(comboLaberintos);
-
-	    // Selector de disposición
-	    comboDisposiciones = new JComboBox<>();
-	    comboDisposiciones.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-	    comboDisposiciones.setBounds(430, 80, 250, 30);
-	    comboDisposiciones.addItem("Disposición A");
-	    comboDisposiciones.addItem("Disposición B");
-	    comboDisposiciones.addItem("Ninguna");
-	    contentPane.add(comboDisposiciones);
 
 	    // Tabla de ranking
 	    JScrollPane scrollPane = new JScrollPane();
@@ -81,12 +105,7 @@ public class Ranking extends JFrame {
 	    tablaRanking.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 	    tablaRanking.setRowHeight(25);
 	    tablaRanking.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
-	    tablaRanking.setModel(new DefaultTableModel(
-	        new Object[][] {
-	        },
-	        new String[] {"Posición", "Jugador", "Puntos"}
-	    ));
-	    scrollPane.setViewportView(tablaRanking);
+	    tablaRanking.setModel(model);
 
 	    // Botón volver
 	    JButton btnVolver = new JButton("Ir al inicio");
