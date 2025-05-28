@@ -107,7 +107,7 @@ public class QuizView extends JFrame {
 	public QuizView(QuizController quizController) {
 		this.quizController = quizController;
         setTitle("Pregunta");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 750, 550);
         contentPane = new JPanel();
         contentPane.setBackground(new Color(40, 45, 60));
