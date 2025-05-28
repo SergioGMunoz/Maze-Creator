@@ -133,7 +133,7 @@ public class DefinirMuros extends JFrame {
         }
     }
 
-    // Guardar disposición
+    // Guardar disposición - MODIFICADO PARA VOLVER AL MENÚ ADMIN
     private void guardarDisposicion() {
         GameController.crearDisposicion(idLaberinto, esMuro, numCocodrilos, numMedkits);
 
@@ -142,6 +142,16 @@ public class DefinirMuros extends JFrame {
             "Éxito", 
             JOptionPane.INFORMATION_MESSAGE);
 
+        // Cerrar esta ventana
         dispose();
+        
+        // Cerrar la ventana anterior si existe
+        if (ventanaAnterior != null) {
+            ventanaAnterior.dispose();
+        }
+        
+        // Abrir el menú de administrador
+        PantallaAdmin pantallaAdmin = new PantallaAdmin();
+        pantallaAdmin.setVisible(true);
     }
 }
