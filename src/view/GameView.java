@@ -193,5 +193,9 @@ public class GameView extends JFrame {
 	    		gameController.move(3);
 	    	}
 	    });
+	    
+	    btnSurrender.addActionListener(e -> {
+	    	gameController.goRanking(false);
+	    });
 	}
 }

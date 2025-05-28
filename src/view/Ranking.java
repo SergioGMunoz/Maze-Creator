@@ -148,6 +148,8 @@ public class Ranking extends JFrame {
 	    btnVolver.addActionListener(e ->  {
 	    	dispose();
 	    	SeleccionLaberinto sl = new SeleccionLaberinto();
+	    	sl.setVisible(true);
+	    	System.out.println("New laberitno");
 	    });
 	}
 
