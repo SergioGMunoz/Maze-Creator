@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -22,6 +23,9 @@ import javax.swing.SwingConstants;
 
 import controller.GameController;
 import model.ConnectionDB;
+import model.Disposition;
+import model.GameDAO;
+import model.Maze;
 
 public class SeleccionLaberinto extends JFrame {
 
@@ -29,109 +33,81 @@ public class SeleccionLaberinto extends JFrame {
     private JPanel contentPane;
     private JComboBox<String> comboLaberintos;
     private JComboBox<String> comboDisposiciones;
-    private HashMap<String, Integer> mazeNameToIdMap = new HashMap<>();
+    private HashMap<String, Integer> mapaNombreALaberinto = new HashMap<>();
 
-    // Por defecto sale el laberinto 1 disposición 1
     private int selectedMazeId = 1;
     private int selectedDispositionId = 1;
 
-    // NUEVO: Crea una nueva disposición real en la BBDD usando la lógica de Disposition
+    // Crea una nueva disposición respetando los muros y la configuración del Maze seleccionado
     private int crearNuevaDisposicion() {
         int nuevaDisposicionId = -1;
-        Connection conn = null;
         try {
-            conn = ConnectionDB.getConnection();
+            GameDAO dao = new GameDAO();
 
-            // 1. Obtén el siguiente ID_Disposition para este maze
+            // 1. Calcula el siguiente ID_Disposition para este Maze
             int mazeId = selectedMazeId;
-            int nextDispositionId = 1;
+            int nextDispositionId = dao.obtenerUltimoIdDisposicion(mazeId) + 1;
 
-            String sqlNextId = "SELECT MAX(ID_Disposition) AS maxId FROM Disposition WHERE ID_Maze = ?";
-            try (java.sql.PreparedStatement stmt = conn.prepareStatement(sqlNextId)) {
-                stmt.setInt(1, mazeId);
-                ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
-                    nextDispositionId = rs.getInt("maxId") + 1;
-                }
-                rs.close();
+            // 2. Obtén datos del Maze correcto y su disposición base (la 1 del Maze seleccionado)
+            Maze maze = dao.getMazeById(mazeId);
+            if (maze == null) {
+            	throw new SQLException("No se ha encontrado el Maze seleccionado en la BBDD.");
             }
+            Disposition dispBase = dao.getDispositionById(maze, 1); // Solo para copiar muros
 
-            // 2. Crea la matriz de celdas vacía (todo libre)
-            //    Obtén el Maze para saber su tamaño y valores
-            model.GameDAO dao = new model.GameDAO();
-            model.Maze maze = dao.getMazeById(mazeId);
             int filas = maze.getNumRow();
             int cols = maze.getNumCol();
-            int[][] cells = new int[filas][cols];
-            // Protege entrada y salida
-            cells[0][0] = 0;
-            cells[filas-1][cols-1] = 0;
 
-            // 3. Añade cocodrilos y medkits con el método de Disposition
-            model.Disposition dispo = new model.Disposition(maze, cells);
-
-            // Puedes pedir al usuario cuántos, o usar los valores por defecto del maze:
-            dispo.añadirCocodrilosYMedkits(maze.getNumCrocodiles(), maze.getNumMedKit());
-
-            // 4. Inserta TODAS las celdas en la tabla
-            String sqlInsert = "INSERT INTO Disposition (ID_Maze, ID_Disposition, Col_Maze, Row_Maze, Cell_Type) VALUES (?, ?, ?, ?, ?)";
-            try (java.sql.PreparedStatement ps = conn.prepareStatement(sqlInsert)) {
-                for (int row = 0; row < filas; row++) {
-                    for (int col = 0; col < cols; col++) {
-                        ps.setInt(1, mazeId);
-                        ps.setInt(2, nextDispositionId);
-                        ps.setInt(3, col);
-                        ps.setInt(4, row);
-
-                        String tipo = switch (cells[row][col]) {
-                            case 0 -> "Free";
-                            case 1 -> "Block";
-                            case 2 -> "Crocodile";
-                            case 3 -> "Medkit";
-                            default -> "Free";
-                        };
-
-                        ps.setString(5, tipo);
-                        ps.addBatch();
-                    }
+            // 3. Copia matriz
+            int[][] nuevaMatriz = new int[filas][cols];
+            for (int i = 0; i < filas; i++) {
+                for (int j = 0; j < cols; j++) {
+                    nuevaMatriz[i][j] = dispBase.getCells()[i][j];
                 }
-                ps.executeBatch();
             }
 
+            // 4. LIMPIA todos los cocodrilos y medkits de la copia, deja solo Free y Block
+            for (int i = 0; i < filas; i++) {
+                for (int j = 0; j < cols; j++) {
+                    if (nuevaMatriz[i][j] == 2 || nuevaMatriz[i][j] == 3) {
+                        nuevaMatriz[i][j] = 0; // Free
+                    }
+                }
+            }
+
+            // 5. Crea la nueva Disposition y añade cocodrilos/medkits SOLO con valores de este Maze
+            Disposition nuevaDispo = new Disposition(maze, nuevaMatriz);
+            nuevaDispo.añadirCocodrilosYMedkits(maze.getNumCrocodiles(), maze.getNumMedKit());
+
+            // 6. Inserta la nueva disposición en la BBDD usando el método de GameDAO
+            dao.insertarDisposicion(nuevaDispo, nextDispositionId);
             nuevaDisposicionId = nextDispositionId;
 
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al crear nueva disposición", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al crear nueva disposición: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
         return nuevaDisposicionId;
     }
 
-    // Método que lanza la ventana de partida aportando la id de laberinto y disposicion
     private void pressBtnJugar() {
         try {
-            // Obtener nombre del laberinto y buscar su ID
             String mazeNameSelected = (String) comboLaberintos.getSelectedItem();
-            selectedMazeId = mazeNameToIdMap.getOrDefault(mazeNameSelected, 1); // Default = 1
+            selectedMazeId = mapaNombreALaberinto.getOrDefault(mazeNameSelected, 1);
 
-            // Obtener ID disposición seleccionada
             String dispoIdSelectedStr = (String) comboDisposiciones.getSelectedItem();
 
             if ("Nueva Disposicion".equals(dispoIdSelectedStr)) {
-                // Aquí llamas al método para crear la nueva disposición y obtener su ID
                 selectedDispositionId = crearNuevaDisposicion();
-                // Opcional: recarga las dispos tras crear una nueva
                 cargarDisposicionesPorMaze(selectedMazeId);
-            }
-            else if (dispoIdSelectedStr != null && dispoIdSelectedStr.startsWith("Disposicion: ")) {
+            } else if (dispoIdSelectedStr != null && dispoIdSelectedStr.startsWith("Disposicion: ")) {
                 try {
                     selectedDispositionId = Integer.parseInt(dispoIdSelectedStr.substring("Disposicion: ".length()));
                 } catch (NumberFormatException e) {
-                    selectedDispositionId = 1; // Valor por defecto
+                    selectedDispositionId = 1;
                 }
-            }
-            else {
-                selectedDispositionId = 1; // Valor por defecto
+            } else {
+                selectedDispositionId = 1;
             }
 
             GameController gameController = new GameController(selectedMazeId, selectedDispositionId);
@@ -200,19 +176,17 @@ public class SeleccionLaberinto extends JFrame {
         comboDisposiciones.setBounds(30, 125, 340, 25);
         panel.add(comboDisposiciones);
 
-        // Cargar disposiciones iniciales para el primer laberinto
         if (comboLaberintos.getItemCount() > 0) {
             String primerLaberinto = (String) comboLaberintos.getItemAt(0);
-            int primerId = mazeNameToIdMap.get(primerLaberinto);
+            int primerId = mapaNombreALaberinto.get(primerLaberinto);
             cargarDisposicionesPorMaze(primerId);
         }
 
-        // Listener para actualizar disposiciones al cambiar de laberinto
         comboLaberintos.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String mazeNameSelected = (String) comboLaberintos.getSelectedItem();
                 if (mazeNameSelected != null) {
-                    int mazeId = mazeNameToIdMap.get(mazeNameSelected);
+                    int mazeId = mapaNombreALaberinto.get(mazeNameSelected);
                     cargarDisposicionesPorMaze(mazeId);
                 }
             }
@@ -228,7 +202,6 @@ public class SeleccionLaberinto extends JFrame {
         JButton btnVolver = new JButton("Volver");
         btnVolver.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("VOLVIENDO");
                 PantallaInicio inicio = new PantallaInicio();
                 inicio.setVisible(true);
                 dispose();
@@ -247,7 +220,6 @@ public class SeleccionLaberinto extends JFrame {
         });
     }
 
-    // Método para cargar los laberintos en el combo
     private void cargarLaberintos() {
         try {
             Connection conn = ConnectionDB.getConnection();
@@ -258,9 +230,8 @@ public class SeleccionLaberinto extends JFrame {
                 int id = rs.getInt("ID_Maze");
                 String nombre = rs.getString("Name");
                 comboLaberintos.addItem(nombre);
-                mazeNameToIdMap.put(nombre, id);
+                mapaNombreALaberinto.put(nombre, id);
             }
-
             rs.close();
             stmt.close();
         } catch (SQLException e) {
@@ -269,14 +240,13 @@ public class SeleccionLaberinto extends JFrame {
         }
     }
 
-    // Método para cargar solo las disposiciones asociadas al laberinto seleccionado
     private void cargarDisposicionesPorMaze(int mazeId) {
         comboDisposiciones.removeAllItems();
         comboDisposiciones.addItem("Nueva Disposicion");
         try {
             Connection conn = ConnectionDB.getConnection();
             String sql = "SELECT DISTINCT ID_Disposition FROM Disposition WHERE ID_Maze = ?";
-            java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+            PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, mazeId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
