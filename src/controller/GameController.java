@@ -182,7 +182,7 @@ public class GameController {
 		return false;
 	}
 	
-	public void goRanking(boolean win) {
+	private void goRanking(boolean win) {
 		System.out.println("Se acabo la partida, ganaste -> " + win);
 		
 		// Inserta en el ranking de la BBDD
