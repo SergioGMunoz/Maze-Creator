@@ -149,8 +149,8 @@ public class CrearLaberinto extends JFrame {
 
             private void verificarCampos() {
                 boolean todosLlenos = true;
-                for (JTextField campo : campos) {
-                    if (campo.getText().trim().isEmpty()) {
+                for (int i = 0; i < campos.length; i++) {
+                    if (campos[i].getText().trim().isEmpty()) {
                         todosLlenos = false;
                         break;
                     }
@@ -159,8 +159,8 @@ public class CrearLaberinto extends JFrame {
             }
         };
 
-        for (JTextField campo : campos) {
-            campo.getDocument().addDocumentListener(verificador);
+        for (int i = 0; i < campos.length; i++) {
+            campos[i].getDocument().addDocumentListener(verificador);
         }
 
         // Listener para el botón crear
@@ -262,14 +262,16 @@ public class CrearLaberinto extends JFrame {
     }
 
     private void abrirDefinirMuros(int idLaberinto, int ancho, int alto, int numCocodrilos, int numMedkits) {
-        EventQueue.invokeLater(() -> {
-            try {
-                DefinirMuros definirMuros = new DefinirMuros(
-                    idLaberinto, ancho, alto, numCocodrilos, numMedkits, CrearLaberinto.this);
-                definirMuros.setVisible(true);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                mostrarError("Error al abrir la ventana de definición de muros: " + ex.getMessage(), "Error");
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    DefinirMuros definirMuros = new DefinirMuros(
+                        idLaberinto, ancho, alto, numCocodrilos, numMedkits, CrearLaberinto.this);
+                    definirMuros.setVisible(true);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    mostrarError("Error al abrir la ventana de definición de muros: " + ex.getMessage(), "Error");
+                }
             }
         });
     }
