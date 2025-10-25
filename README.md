@@ -43,7 +43,14 @@ El administrador puede crear laberintos, colocar bloques y añadir diferentes pr
 - [Java JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 
 ### 🧩 Pasos para ejecutar el juego
-- Clona el programa en tu equipo **git clone https://github.com/SergioGMunoz/Laberinto**
-- Corre el script de la Base de Datos **Laberinto.sql**
-- Ejecuta el programa: **java src/controller/Launcher.java**
+1. Clona el programa en tu equipo: `git clone https://github.com/SergioGMunoz/Laberinto`
+2. Ejecuta el script de la Base de Datos **Laberinto.sql** en MySQL
+3. Ejecuta el programa usando el script: `.\ejecutar_app.bat` (Windows)
+   - O manualmente: `java -cp "lib\mysql-connector-j-8.2.0.jar;." controller.Launcher`
+
+### 🔑 Credenciales de prueba
+- **Administrador**: Contraseña `1234`
+  - Permite crear laberintos, añadir preguntas y configurar el juego
+- **Jugador**: Introduce cualquier alias para jugar
+
 ---
