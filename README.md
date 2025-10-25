@@ -47,7 +47,3 @@ El administrador puede crear laberintos, colocar bloques y añadir diferentes pr
 - Corre el script de la Base de Datos **Laberinto.sql**
 - Ejecuta el programa: **java src/controller/Launcher.java**
 ---
-
-## 🚧 Estado actual
-
-> En desarrollo. Funcionalidades principales implementadas.
