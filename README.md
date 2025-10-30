@@ -1,6 +1,6 @@
-# 🧩 Laberinto
+# 🧩 Maze Creator
 
-**Laberinto** es un juego desarrollado en Java utilizando Swing para la interfaz gráfica.  
+**Maze Creator** es un juego desarrollado en Java utilizando Swing para la interfaz gráfica.  
 El jugador se enfrenta a un laberinto con obstáculos (cocodrilos 🐊 y botiquines 🩹), y solo puede avanzar si responde correctamente a preguntas.  
 El administrador puede crear laberintos, colocar bloques y añadir diferentes preguntas.
 
